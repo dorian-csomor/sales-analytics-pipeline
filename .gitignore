@@ -1,0 +1,25 @@
+# Secrets
+.env
+
+# Generated data (recreate with scripts/generate_source_data.py)
+data/source_csv/*.csv
+data/analytics_csv/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Logs
+logs/
+*.log
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Power BI temp files
+*.pbix.bak
