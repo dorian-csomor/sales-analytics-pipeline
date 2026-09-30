@@ -19,6 +19,10 @@ facility supplies selling in five Central European countries (4 currencies, 2023
 > and contains deliberately planted data quality problems and business patterns, similar to a real ERP.
 > See [docs/source_data_design.md](docs/source_data_design.md).
 
+> **How it was built:** built with AI assistance (Claude) for parts of the Python and SQL code.
+> Project design, data model, Power BI report and analysis are my own work, and all code was
+> reviewed and tested by me.
+
 ## Key findings
 
 The report answers one management question: **why did growth stall in 2025, and where should we act?**
