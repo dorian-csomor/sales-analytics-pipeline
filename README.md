@@ -3,6 +3,8 @@
 End-to-end analytics project for **Vireo Wholesale**, a fictional B2B distributor of office and
 facility supplies selling in five Central European countries (4 currencies, 2023–2026).
 
+![Executive overview](docs/screenshots/01_executive_overview.png)
+
 ```
 ┌──────────────────────┐    SQL     ┌─────────────────────────────┐          ┌──────────────────────┐        ┌──────────────┐
 │ PostgreSQL  ops.*    │ ─────────▶ │ Python / pandas             │ ───────▶ │ PostgreSQL           │ ─────▶ │ Power BI     │
@@ -17,7 +19,21 @@ facility supplies selling in five Central European countries (4 currencies, 2023
 > and contains deliberately planted data quality problems and business patterns, similar to a real ERP.
 > See [docs/source_data_design.md](docs/source_data_design.md).
 
+## Key findings
+
+The report answers one management question: **why did growth stall in 2025, and where should we act?**
+
+| Finding | Evidence |
+|---|---|
+| **Growth stalled** | Net sales +15% in 2024, only +1% in 2025 (€14.2M) |
+| **Romania lost ground after an account handover** | Romanian net sales −25% in 2025 after the key account manager left in March; active customers fell from 53 (2024) to 33 (2026, Jan–Aug) |
+| **Tech Accessories: growth without profit** | Fastest-growing category (+12% in 2025), but gross margin fell from 31% to 15% after supplier price rises that weren't passed on |
+| **A supplier quality problem** | Aurora Hygiene products are returned on 6.9% of order lines, 2–6x more than other suppliers; 3 out of 4 of its returns are defects |
+| **Newer customers churn faster** | Two years after their first order, 62% of the 2024 cohort still buy vs 78% of the 2023 cohort; SMB retention (~82%) trails Enterprise and Mid-Market (90%+) |
+
 ## Highlights
+
+**Data engineering**
 
 - **21 data quality issues detected and handled**, each one logged with row counts and the action
   taken → [sample data quality report](reports/data_quality_report.md)
@@ -31,12 +47,42 @@ facility supplies selling in five Central European countries (4 currencies, 2023
 - **BI-tool independent**: the analytics schema works with Power BI, Tableau, Excel or plain SQL. Switching the
   database to SQL Server means changing the connection URL.
 
-## Project status
+**Power BI**
 
-- [x] **Step 1:** Source database (schema, data generator, loader)
-- [x] **Step 2:** ETL pipeline (SQL extraction, Python cleansing, star schema)
-- [ ] **Step 3:** Power BI management report
-- [ ] **Step 4:** Documentation & screenshots
+- 5-page management report on the star schema (Import mode, single-direction relationships, marked date table)
+- **25+ DAX measures** in display folders: time intelligence with fair year-over-year comparison for the
+  partial year 2026, gross margin in percentage points, customer retention, new and lapsed customers,
+  cohort retention, line-based return rates
+- **Cohort analysis**: share of each customer cohort still buying in later years
+- **Data quality page** fed by the pipeline's own log, refreshed with every run
+- Custom dark theme and icon navigation (in [`powerbi/`](powerbi/))
+
+## Report pages
+
+| Page | What it shows |
+|---|---|
+| **Executive overview** | KPIs, monthly sales vs prior year, growth by country and category, key findings |
+| **Sales team & regions** | Net sales and growth by territory and rep; the Romania handover and its customer impact |
+| **Products & margin** | Margin trend by category, gross margin by category, supplier return rates, top products |
+| **Customers & retention** | Active, new and lapsed customers, retention by segment, cohort matrix, customer status |
+| **Data quality** | Latest pipeline run and every data quality issue found and handled |
+
+<details>
+<summary><b>Screenshots</b></summary>
+
+### Sales team & regions
+![Sales team & regions](docs/screenshots/02_sales_team_regions.png)
+
+### Products & margin
+![Products & margin](docs/screenshots/03_products_margin.png)
+
+### Customers & retention
+![Customers & retention](docs/screenshots/04_customers_retention.png)
+
+### Data quality
+![Data quality](docs/screenshots/05_data_quality.png)
+
+</details>
 
 ## Tech stack
 
@@ -55,7 +101,7 @@ PostgreSQL · SQL · Python (pandas, SQLAlchemy, psycopg, pytest) · Power BI (D
 
 ## Getting started
 
-Requirements: Python 3.11+, PostgreSQL 14+.
+Requirements: Python 3.11+, PostgreSQL 14+, Power BI Desktop (for the report).
 
 ```bash
 # 1. virtual environment and packages
@@ -80,6 +126,9 @@ python run_pipeline.py --export-csv   # also write the star schema to data/analy
 python -m pytest                      # run the unit tests
 ```
 
+**5. Open the report:** open `powerbi/vireo_sales_report.pbix` in Power BI Desktop. It connects to the
+`vireo` database on `localhost`. Enter your PostgreSQL credentials when asked, then click **Refresh**.
+
 ## Repository structure
 
 ```
@@ -98,8 +147,14 @@ database/
   extract/                 one SQL extraction query per source table
   profiling/               SQL used to profile the source before writing the rules
   analytics/               star schema DDL and ETL metadata tables
+powerbi/
+  vireo_sales_report.pbix  the Power BI report
+  vireo_dark_theme.json    report theme
+  icons/                   navigation icons
 scripts/                   data generator and source database setup
 tests/                     pytest unit tests
 reports/                   data quality report (regenerated on every run)
-docs/                      design notes
+docs/
+  source_data_design.md    how the simulated source data was designed
+  screenshots/             report screenshots
 ```
